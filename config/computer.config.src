@@ -1,0 +1,38 @@
+[
+{hera, [
+    {log_data, true}
+]},
+
+{kernel, [
+    {distributed, [{hera_synchronization, 2000, [{
+        sensor_fusion@sonar_1,
+        sensor_fusion@sonar_2,
+        sensor_fusion@sonar_3
+    }]}]},
+
+    {sync_nodes_mandatory, []},
+
+    {sync_nodes_optional, [
+        sensor_fusion@sebastien,
+        sensor_fusion@sonar_1,
+        sensor_fusion@sonar_2,
+        sensor_fusion@sonar_3,
+        sensor_fusion@nav_1,
+        sensor_fusion@nav_2
+    ]},
+
+    {sync_nodes_timeout, 5000},
+    {net_ticktime, 8}
+]},
+
+{grisp , [
+    {drivers , [
+        {spi , grisp_emulation_spi_drv} ,
+        {gpio , grisp_emulation_gpio_drv} ,
+        {i2c , grisp_emulation_i2c_drv}
+    ]} ,
+    {devices , [
+        %{spi1 , pmod_nav}
+    ]}
+]}
+].

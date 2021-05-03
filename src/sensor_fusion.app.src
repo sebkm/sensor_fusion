@@ -1,0 +1,22 @@
+{application, sensor_fusion, [
+    {description, "A GRiSP application for sensor fusion"},
+    {vsn, "1.0.0"},
+    {registered, [sensor_fusion_sup]},
+    {mod, {sensor_fusion, []}},
+    {applications, [
+        kernel,
+        stdlib,
+        grisp,
+        hera
+    ]},
+    {env,[]},
+    {modules, [
+    	sensor_fusion, sensor_fusion_sup,
+    	sonar, nav, nav3, mag, bilateration,
+    	e4, e5, e6, e7, e8, e9, e10, e11,
+        measure_counter, killer
+    ]},
+    {maintainers, []},
+    {licenses, ["Apache 2.0"]},
+    {links, []}
+]}.

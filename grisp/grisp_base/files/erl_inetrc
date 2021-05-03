@@ -1,0 +1,19 @@
+%--- Erlang Inet Configuration -------------------------------------------------
+
+% Add hosts
+
+{host, {192,168,43,217}, ["sebastien"]}.
+{host, {192,168,43,12}, ["sonar_1"]}. % SN198
+{host, {192,168,43,142}, ["sonar_2"]}. % SN199
+{host, {192,168,43,245}, ["sonar_3"]}. % SN176
+{host, {192,168,43,90}, ["nav_1"]}. % SN194
+{host, {192,168,43,206}, ["nav_2"]}. % SN177
+
+% Do not monitor the hosts file
+{hosts_file, ""}.
+
+% Disable caching
+{cache_size, 0}.
+
+% Specify lookup method
+{lookup, [file, native]}.

@@ -1,0 +1,6 @@
+accelerometer only
+
+The train is at speed 3.
+
+nav.csv: seqnum,timestamp,ax,_
+e4.csv: seqnum,timestamp,omega

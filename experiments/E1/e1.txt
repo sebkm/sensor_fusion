@@ -1,0 +1,7 @@
+Back and forth motion in a straight line.
+
+kalman.m is modeling a linear motion with constant acceleration. Using data from
+    one sonar and accelerometer.
+
+SONAR.csv: range, time
+NAV.csv: ax, time

@@ -1,0 +1,13 @@
+In this experiment we try to compare three implementations under 3 different situations.
+
+The three implementations are:
+- acc_mag: orientation is computed with accelerometer and magnetometer (update model).
+- gyro: orientation is computed with a inertial model (prediction model).
+- acc_mag_gyro: combining prediction and update models with a kalman filter.
+
+The three situations are:
+- slow 360° rotation
+- fast 360° rotation
+- shaking without rotation
+
+For the shaking, the 3 implementations were running on the computer at the same time, but the the others were computed on the grisp one at a time.

@@ -1,0 +1,9 @@
+A person moving in a straight line.
+
+kalman.m is modeling a linear motion with constant acceleration. Using data from
+    bilateration and accelerometer.
+
+sonar.csv: seqnum, range, timestamp(local)
+NAV.csv: ax, ay, az
+
+This experiment is a failure.

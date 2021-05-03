@@ -1,0 +1,8 @@
+2 independent sonars + accelerometer + gyro fusion on Grisp
+
+The train is at speed 3.
+The cicle center is at (0,0).
+
+sonar.csv: seqnum,timestamp,range,posx,posy
+nav.csv: seqnum,timestamp,ax,Gz
+e7.csv: seqnum,timestamp,posx,posy,theta,omega
