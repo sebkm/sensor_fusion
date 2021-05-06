@@ -144,7 +144,7 @@ function hera_synchronization()
     hold on;
     grid on;
     set(gca(), "fontsize", 20);
-    axis([0 130 0 14]);
+    axis([0 120 0 14]);
 
     tv = t(s1(:,2));
     plot(tv, s1(:,3)/1000, '-*');
