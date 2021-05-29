@@ -22,8 +22,8 @@ hold on;
 grid on;
 title("Circular Motion");
 plot(x, y);
-xlabel("x");
-ylabel("y");
+xlabel("x [m]");
+ylabel("y [m]");
 
 
 

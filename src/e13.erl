@@ -22,7 +22,7 @@ calibrate({MBx,MBy,MBz}) ->
     [Ax,Ay,Az] = calibrate(acc, [out_x_xl, out_y_xl, out_z_xl], 100),
     [Mx,My,Mz] = calibrate(mag, [out_x_m, out_y_m, out_z_m], 10),
     R0 = ahrs([Ax,Ay,-Az], [-(Mx-MBx),My-MBy,-(Mz-MBz)]),
-    mat:tr(R0). % TODO: quaternion instead of dcm
+    mat:tr(R0).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Callbacks
@@ -36,14 +36,14 @@ init(R0) ->
     },
     T0 = hera:timestamp(),
     Xpos = mat:zeros(9, 1),
-    Ppos = mat:eye(9), %% grossir erreur
+    Ppos = mat:eye(9),
     Xor = [[1],[0],[0],[0]],
     Por = mat:diag([10,10,10,10]),
     State = {T0, Xpos, Ppos, Xor, Por, R0},
     {ok, State, Spec}.
 
 
-measure({T0, Xpos, Ppos, Xor, Por, R0}) -> %% T0Pos =? T0Or
+measure({T0, Xpos, Ppos, Xor, Por, R0}) ->
     DataSonars = hera_data:get(sonar),
     DataNav = hera_data:get(nav3, sensor_fusion@nav_2),
     T1 = hera:timestamp(),

@@ -15,9 +15,9 @@ To use our system you need:
 
 You can find all GRiSP related hardware at https://www.grisp.org/shop/.
 
-Additionally, if you want to reproduce some of our experiments you might need https://www.lgb.com/products/details/article/90463/.
+Additionally, if you want to reproduce some of our experiments you might need to purchase a toy train (https://www.lgb.com/products/details/article/90463/).
 
-## Required softwares
+## Required software
 To use our system you need to install on your computer:
 - Erlang/OTP 22.0
 - rebar3 3.13.0
@@ -108,7 +108,7 @@ In this example, the sd card is names "GRISP".
 ]}
 ```
 
-If you want to have more indepth information about configuration files here are a few useful links:
+If you want to have more in-depth information about configuration files here are a few useful links:
 - https://github.com/grisp/grisp/wiki
 - https://github.com/grisp/rebar3_grisp
 - https://github.com/erlang/rebar3
@@ -130,7 +130,15 @@ For example:
 make deploy-nav_2
 ```
 
-After that, you can plug the sd cards in their respective GRiSP boards and connect them to the battery.
+After that, you can plug the sd cards in their respective GRiSP boards.
+Then, you should plug the Pmod sensors:
+
+| Pmod      | Slot  |
+| :---:     | :---: |
+| NAV       | SPI1  |
+| MAXSONAR | UART  |
+
+Finally, you can connect the board to the battery.
 During the boot phase you should see one green LED.
 After ~5 min you should see two red LEDs or two green LEDs (see later).
 In case of problems we advise you to connect the GRiSP-base by serial https://github.com/grisp/grisp/wiki/Connecting-over-Serial.
@@ -141,13 +149,13 @@ You can either have a clean start with:
 ```bash
 make local_release && make run_local
 ```
-or start in developpement mode with:
+or start in developement mode with:
 ```bash
 make shell
 ```
-We advise you to start in developpement mode.
+We advise you to start in developement mode.
 Note that if you use the release the measures folder will be created in the release root directory.
-After a few seconds a message will be displyed telling you that the application is booted.
+After a few seconds a message will be displayed telling you that the application is booted.
 You might need to press enter to get the shell prompt.
 
 ## Launching the system
@@ -174,8 +182,8 @@ Then you must call:
 sensor_fusion:set_args(sonar, Arg1, Arg2, Arg3).
 ```
 Where `Arg1` is the maximal range that can be measured by the sonar while `Arg2` and `Arg3` are either the x and y coordinate of the sonar or the distance to the origin (0,0,0) and the direction (-1 or +1) of the sonar with respect to the axis it is aligned with.
-The former is used for the experiments with the train while the latter is used for the 6DOF IMU.
-The 6DOF IMU requires 3 sonars and each of them must be placed on a different axis (x,y,z).
+The former is used for the experiments with the train while the latter is used for the 6 DOF IMU.
+The 6 DOF IMU requires 3 sonars and each of them must be placed on a different axis (x,y,z).
 If you need to, you can use `sonar:range/0` to see what the sonar is measuring. 
 
 #### Calibration of a nav node
@@ -189,7 +197,7 @@ Then you must call:
 sensor_fusion:set_args(Nav).
 ```
 Where `Nav` is either `nav` or `nav3`.
-The former is used for the experiments with the train while the latter is used for the 6DOF IMU.
+The former is used for the experiments with the train while the latter is used for the 6 DOF IMU.
 Once you press enter, instructions will appear on your screen.
 Follow these instructions.
 
@@ -198,7 +206,7 @@ You can launch the whole cluster from any node with:
 ```erlang
 sensor_fusion:launch_all().
 ```
-Alternaltively you can launch a single node from the remote shell with:
+Alternatively you can launch a single node from the remote shell with:
 ```erlang
 sensor_fusion:launch().
 ```
@@ -218,7 +226,7 @@ make liveView
 ```
 This will open a small GUI.
 First, select the view you want.
-We have created 3:
+We have created 4:
 - train tracking
 - sonar range
 - 3d orientation
@@ -226,7 +234,7 @@ We have created 3:
 
 Then, click on the button "data.csv" and select the csv file you want to read.
 Each csv file produced by the erlang application starts with the name of the measure.
-Here is the correspondance between the view selection and the measure names:
+Here is the correspondence between the view selection and the measure names:
 
 | view name      | measure name   |
 | :---:          | :---:          |
@@ -246,30 +254,124 @@ Our application is made to be extended.
 The dynamic measurements are handled by the framework "hera" and the actual measurements as well as the calibration storage are handled by the application "sensor_fusion".
 The framework will not be explained in this document.
 
-### Adding a new measure
-You can easily add a new measure by creating a new hera_measure behaviour module.
+### Creating a new measure process
+You can easily add a new measure by creating a new `hera_measure` behaviour module.
 You only need to provide two functions: `init/1` and `measure/1`.
+
+The `init/1` callback takes as argument any Erlang term and must return a tuple of the following type:
+```erlang
+{ok, State :: term(), Spec :: measure_spec()}.
+```
+
+Where `Spec` is a map specified by:
+```erlang
+-type measure_spec() :: #{
+	name := atom(), % measure id
+	iter := pos_integer() | infinity, % number of measures to perform
+	sync => boolean(), % must the measure must be synchronized? (default: false)
+	timeout => timeout() % min delay between two measures (default: 1)
+}.
+```
+
+The argument of `measure/1` can be any Erlang term.
+You can use it for all sorts of things like a state variable or calibration data.
+This callback must return a tuple of the following type:
+```erlang
+{ok, Values, NewState} | {undefined, NewState} when
+Values :: [number(), ...],  
+NewState :: term().
+```
+
 To start the measure you should call:
 ```erlang
 hera:start_measure(Module, Args).
 ```
+
 Where `Module` is your behaviour module and `Args` will be passed as argument to
 `init/1`.
-It can be whatever you want.
-The argument of `measure/1` is a state variable.
-You can use it for all sorts of things.
-We often use it as calibration data.
-For more information we advise you to look at some examples in this application.
-You can find the exact specification in [hera_measure.erl](https://github.com/sebkm/hera/blob/main/src/hera_measure.erl).
-
-If the `Args` passed to `hera:start_measure/2` must be persistant you can store it in the system with:
+If the `Args` passed to `hera:start_measure/2` must be persistent you can store it in the system with:
 ```erlang
 sensor_fusion:update_table({{Key, node()}, Args}).
 ```
-You can look in [sensor_fusion.erl](src/sensor_fusion.erl) for usage examples.
+
+And later retrieve it with:
+```erlang
+ets:lookup_element(args, {Key, node()}, 2).
+```
+
+For more information, we advise you to look at some examples in this application.
+You should also look in [sensor_fusion.erl](src/sensor_fusion.erl) to see how we launch the system and manage the persistent data.
+
+### Adding a new sensor
+The first thing to do, is to enable the driver of the Pmod sensor with:
+```erlang
+grisp:add_device(Slot, Driver).
+```
+
+Where `Slot` is the lower case version of the slot name printed on the board itself and `Driver` is the name of the driver module (All the drivers can be found at https://github.com/grisp/grisp/tree/master/src).
+
+Then, you can create a new measure process.
+To read the sensor, you simply need to call the sensor driver *get* function in the `measure/1` callback of your `hera_measure` behaviour module.
+For instance:
+```erlang
+measure(Calibration) ->
+	RawData = pmod_nav:read(acc, [out_x_xl]),
+	% ... do something with the RawData and the Calibration
+	{ok, CorrectedData, Calibration}.
+```
+
+In this example, we receive a calibration as argument.
+Here are the steps to follow if you need a calibration:
+
+1. Create and export a calibration function in your module.
+2. Before you start the measure, call your calibration function and store the output with `sensor_fusion:update_table/1`.
+4. Your `init/1` callback should forward the data in the `State` variable.
+
+
+If you need to, you can also update the state with the `NewState` variable in the output of your `measure/1` callback.
+        
+### Adding a new sensor fusion model
+In Hera, we perform sensor fusion via `hera_measure` modules.
+Each module has an `init/1` and a `measure/1` callback.
+In the `measure/1` callback, we can fetch the data from the local data store with `hera_data:get/1` and `hera_data:get/2`.
+You can discard old data with a simple timestamp filter.
+Then, you can write the parameters required for your sensor fusion model using list comprehensions and the fetched data.
+In our case, we use a Kalman filter and so, we write all the "variadic" matrices needed.
+Finally, we give these parameters as argument to the Kalman function, included as library in Hera, and recover the result.
+
+Here is a short example where we fetch new (not used in the previous computation and arrived since at most 500 [ms]) sonar data, create the matrices and call the Kalman filter.
+Then, we serialize the matrix containing the state vector and we update the state of the model.
+As you can see, we update a timestamp to avoid reusing data multiple times.
+
+```erlang
+measure(State = {T0, X0, P0}) ->
+	DataSonars = hera_data:get(sonar),
+	T1 = hera:timestamp(),
+	Sonars = [{Node,Data} || {Node,Seqnum,Ts,Data} <- DataSonars, T0 < Ts, T1-Ts < 500],
+	Matrix1 = ...
+	Matrix2 = ... 
+	{X1, P1} = kalman:kf(State, Matrix1, Matrix2, ...), 
+	NewState = {T1, X1, P1},
+	Values = lists:append(X1),
+	{ok, Values, NewState}.
+```
+
+Our Kalman library offers two Kalman filters: the linear Kalman filter without control input and the extended Kalman filter without control input.
+We also separately implement the predict and update phase for the linear Kalman filter, allowing to use them independently if needed.
+A matrix library is also included in Hera and offers common matrix operations in the `mat` module. 
+
+For more information, we advise you to look at some examples in this application.
+            
+### Adding new libraries to Hera (Kalman filters, matrix operations, ...)
+The Hera framework comes with 2 implementations of [Kalman filters](https://github.com/sebkm/hera/blob/main/src/kalman.erl): the linear Kalman filter without control input and the extended Kalman filter without control input.
+For some applications, new Kalman filters or even different data fusion algorithm can be added to Hera in a straightforward manner.
+Hera also provide a [matrix library](https://github.com/sebkm/hera/blob/main/src/mat.erl) that could be extended with new operations.
+The only constraint is that the algorithms must be implemented by pure functions.
+The purpose is simply to provide a reusable toolbox for the `hera_measure` modules where all the states and side effects should be embedded.
+
 
 ### Updating the code
-When you make a change to the code, you can compile it with `rebar3 compile` and even have additional type checks (recommanded) with:
+When you make a change to the code, you can compile it with `rebar3 compile` and even have additional type checks (recommended) with:
 ```bash
 rebar3 dialyzer
 ```
@@ -284,28 +386,28 @@ If you are running the application with `make shell`, you can update the code li
 sensor_fusion:update_code(Application, Module).
 ```
 Where `Application` and `Module` are the application and module you wish to update.
-This will make the update permanant (even after a reboot).
+This will make the update permanent (even after a reboot).
 The Application must already exist on each GRiSP-base, but the module may be new.
 However, if it is new, the module will not be loaded on start-up.
 
 Note that if you update hera your changes will only be applied after a reboot of hera.
-You can force it with `sensor_fusion:stop_all/0.`
+You can force it with `sensor_fusion:stop_all/0`.
 
 If you made lots of changes you should consider deploying the application again.
 
 ### Adding a new view in LiveView
 Creating your own view requires only 3 steps:
 1. Create a figure initialization callback (e.g. [initTrain.m](liveView/initTrain.m)) that should return handles to your axes.
-2. Create a figure update callback (e.g. [updateTrain.m](liveView/updateTrain.m)) that receives the last measure aswell as the handles.
+2. Create a figure update callback (e.g. [updateTrain.m](liveView/updateTrain.m)) that receives the last measure as well as the handles.
 	A data global variable can be used to store data in a more permanent way.
-	The data will be erased uppon leaving the view.
+	The data will be erased upon leaving the view.
 3. Adding a new entry in the view selection menu as well as your callbacks in [liveView.m](liveView/liveView.m):
 ```matlab
-initView = {@initTrain, @initSonarx};
+initView = {@initTrain, @initSonar};
 updateView = {@updateTrain, @updateSonar};
 views = {"train tracking", "sonar range"};
 ```
 Currently, liveView only enables you to read from one file, but you can have multiple instances of liveView at the same time.
 This way, you can visualize data from multiples sources.
 If you need to visualize the data before the measurement is even started on the Erlang application, you can create the csv file yourself and start liveView.
-As soon as it will be writen, the view will be updated.
+As soon as it will be written, the view will be updated.

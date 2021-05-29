@@ -108,7 +108,7 @@ function hera_sync_sub()
     plot(t(sync3(:,2)), sync3(:,3)/1000, '-*', "color", "black");
     plot(t(sync4(:,2)), sync4(:,3)/1000, '-*', "color", "black");
     plot(t(sync5(:,2)), sync5(:,3)/1000, '-*', "color", "black");
-    p = plot([5 5], [0 1.4], '-.', "color", "red");
+    p = plot([4.7 4.7], [0 1.4], '-.', "color", "red");
     legend(p, "fault injection", "location", "northwest");
 
 
@@ -132,7 +132,7 @@ function hera_sync_sub()
     plot(t(sub3(:,2)), sub3(:,3)/1000, '-*', "color", "black");
     plot(t(sub4(:,2)), sub4(:,3)/1000, '-*', "color", "black");
     plot(t(sub5(:,2)), sub5(:,3)/1000, '-*', "color", "black");
-    p = plot([5 5], [0 3], '-.', "color", "red");
+    p = plot([4.7 4.7], [0 3], '-.', "color", "red");
     legend(p, "fault injection", "location", "northwest");
 end
 
@@ -149,12 +149,10 @@ function hera_synchronization()
     tv = t(s1(:,2));
     plot(tv, s1(:,3)/1000, '-*');
     plot(tv(end)+t(s2(:,2)), s2(:,3)/1000, '-*');
-    plot(tv(end)*[1 1], [0 14], '-.');
 
     xlabel("time [s]");
     ylabel('{\Delta}t [s]');
     legend("2 power-off, 0 failover", "1 power-off, 1 failover",
-        "restart with remaining nodes",
         "location", "northwest");
 
 end

@@ -15,4 +15,4 @@ plot(t, e10(:,5));
 legend("x", "y", "z");
 axis([0 t(end) -0.6 0.6]);
 ylabel("position [m]");
-xlabel("time [m]");
+xlabel("time [s]");
