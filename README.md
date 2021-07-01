@@ -1,4 +1,4 @@
-Repository of the master thesis "Sensor fusion at the extreme edge of an internet of things network" by Sébastien Kalbusch and Vincent Verpoten.
+Repository of the master thesis ["The Hera framework for fault-tolerant sensor fusion on an Internet of Things network with application to inertial navigation and tracking"](thesis.pdf) by Sébastien Kalbusch and Vincent Verpoten.
 This repository is based on the work of a previous master thesis from Julien Bastin and Guillaume Neirinckx.
 You can find their repository here: https://github.com/bastinjul/sensor_fusion
 
